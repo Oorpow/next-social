@@ -2,9 +2,6 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import SignIn from '@/components/oauth/GithubSignIn';
-import { SignOut } from '@/components/oauth/GithubSignOut';
-import { UserAvatar } from '@/components/oauth/UserAvatar';
 import Sidebar from '@/components/sidebar/sidebar';
 import RightSide, {
 	ISuggestion,
@@ -15,7 +12,6 @@ import MiddleArea, { IPost } from '@/components/middle-area/middle-area';
 export default function Home() {
 	const { data } = useSession();
 	// NOTE username email，登录完成后，用useraction创建一个用户?
-	console.log(data);
 
 	const [posts, setPosts] = useState<Array<IPost>>([
 		{
@@ -89,14 +85,10 @@ export default function Home() {
 	]);
 
 	return (
-		// <SignIn />
-		// <SignOut />
-		// <UserAvatar session={data} />
-
 		<div className="min-h-screen bg-background">
 			<div className="container mx-auto flex">
 				{/* 左侧导航栏 */}
-				<Sidebar />
+				<Sidebar session={data} />
 				{/* 中间内容区 */}
 				<MiddleArea posts={posts} />
 				<RightSide trends={trends} suggestions={suggestions} />

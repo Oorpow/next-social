@@ -1,24 +1,28 @@
 import {
-	Bell,
-	Bookmark,
 	Home,
-	Mail,
 	MoreHorizontal,
 	Search,
 	User,
 } from 'lucide-react';
+import { signOut } from 'next-auth/react';
+import { Session } from 'next-auth';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import SignIn from '../oauth/GithubSignIn';
 
-function Sidebar() {
+interface SidebarProps {
+	session: Session | null;
+}
+
+function Sidebar(props: SidebarProps) {
+	const { session } = props;
+
 	const navList = [
 		{
 			title: '主页',
@@ -34,8 +38,8 @@ function Sidebar() {
 		},
 		{
 			title: '更多',
-			icon: <MoreHorizontal className="h-5 w-5" />
-		}
+			icon: <MoreHorizontal className="h-5 w-5" />,
+		},
 	];
 
 	return (
@@ -55,36 +59,45 @@ function Sidebar() {
 					))}
 				</nav>
 
-				<Button className="w-full mt-4">登录</Button>
-				<div className="mt-auto pt-4">
-					<div className="flex items-center gap-2 p-2 rounded-full cursor-pointer">
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<div className="flex justify-between w-full">
-									<div className="flex gap-2">
-										<Avatar>
-											<AvatarImage src="https://github.com/shadcn.png" />
-											<AvatarFallback>用</AvatarFallback>
-										</Avatar>
-										<div className="flex-1 overflow-hidden">
-											<p className="font-medium text-sm">
-												当前用户
-											</p>
-											<p className="text-xs text-muted-foreground truncate">
-												@username
-											</p>
+				{session?.user ? (
+					<div className="mt-auto pt-4">
+						<div className="flex items-center gap-2 p-2 rounded-full cursor-pointer">
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<div className="flex justify-between w-full">
+										<div className="flex gap-2">
+											<Avatar>
+												<AvatarImage
+													src={session?.user?.image ?? ''}
+												/>
+												<AvatarFallback>
+													{session?.user?.name}
+												</AvatarFallback>
+											</Avatar>
+											<div className="flex-1 overflow-hidden">
+												<p className="font-medium text-sm">
+													当前用户
+												</p>
+												<p className="text-xs text-muted-foreground truncate">
+													{session?.user?.name}
+												</p>
+											</div>
 										</div>
-									</div>
 
-									<MoreHorizontal className="h-4 w-4" />
-								</div>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent className="w-56">
-								<DropdownMenuItem>Log out</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+										<MoreHorizontal className="h-4 w-4" />
+									</div>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent className="w-56">
+									<DropdownMenuItem onClick={() => signOut()}>
+										logout
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
 					</div>
-				</div>
+				) : (
+					<SignIn />
+				)}
 			</div>
 		</div>
 	);
